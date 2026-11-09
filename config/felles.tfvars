@@ -5,6 +5,6 @@
 
 kortnavn = "katm"
 
-# Forsok med North Europe etter rad fra faglaerer om kapasitetsfeil i West Europe.
+# West Europe med P0v3 proeves etter kapasitetsfeil for B1 og manglende kvote i North Europe.
 # Brukes til et nytt utgangspunkt for migreringen.
-location = "northeurope"
+location = "westeurope"
