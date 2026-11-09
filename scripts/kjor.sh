@@ -9,7 +9,7 @@
 #  en liste i dette skriptet. Hver fil er én instans av en stack, med sin egen
 #  state-fil:
 #
-#      config/dev/network.tfvars    → stacks/network/   key oblig2/dev/network.tfstate
+#      config/dev/shared-network.tfvars → stacks/shared-network/ → oblig2/dev/shared-network.tfstate
 #      config/dev/<type>-<x>.tfvars → stacks/<type>/    key oblig2/dev/<type>-<x>.tfstate
 #
 #  Den andre linja gjelder bare når det ikke finnes en mappe som heter det
@@ -23,12 +23,8 @@
 #    apply  Planlegger og ruller ut, én stack om gangen. Stopper ved første
 #           feil.
 #
-#  Alle stackene får -var-file=config/felles.tfvars i tillegg til sin egen
-#  fil, og disse variablene fra miljøet:
-#      TF_VAR_miljo                       dev eller prod
-#      TF_VAR_state_resource_group_name   fra shared/backend.hcl
-#      TF_VAR_state_storage_account_name  fra shared/backend.hcl
-#      TF_VAR_state_container_name        fra shared/backend.hcl
+#  Alle stackene får config/felles.tfvars og sin egen config-fil.
+#  TF_VAR_miljo settes til dev eller prod. Backend leses fra shared/backend.hcl.
 #
 #  Skriver et sammendrag i Markdown til rapport.md. Workflowene legger det på
 #  PR-en eller i jobbsammendraget.
@@ -39,7 +35,7 @@
 
 set -uo pipefail
 
-LAG="network shared-network data app service"
+LAG="shared-network service"
 
 MILJO="${1:-}"
 HANDLING="${2:-}"
@@ -57,15 +53,7 @@ if [ -z "${ARM_SUBSCRIPTION_ID:-}" ]; then
   export ARM_SUBSCRIPTION_ID
 fi
 
-# Leser én verdi fra shared/backend.hcl, f.eks. storage_account_name.
-backend_verdi() {
-  sed -n "s/^[[:space:]]*$1[[:space:]]*=[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$ROT/shared/backend.hcl" | head -1
-}
-
 export TF_VAR_miljo="$MILJO"
-export TF_VAR_state_resource_group_name="$(backend_verdi resource_group_name)"
-export TF_VAR_state_storage_account_name="$(backend_verdi storage_account_name)"
-export TF_VAR_state_container_name="$(backend_verdi container_name)"
 
 # Hvilken mappe under stacks/ en config-fil hører til.
 stackmappe() {
