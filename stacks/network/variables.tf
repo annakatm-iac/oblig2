@@ -35,9 +35,3 @@ variable "tjenester" {
     runtime = string
   }))
 }
-
-variable "allow_http_from" {
-  description = "Hvem som får nå tjenestene på port 80."
-  type        = string
-  default     = "Internet"
-}
