@@ -1,0 +1,49 @@
+
+Selvtest for obligatorisk øving 2
+Repo: /Users/kataryna/IaC DCST3005/oblig2
+Kortnavn: katm   State: sttfkatm60hkd7/tfstate
+
+A · Utgangspunkt
+  OK       K1    Vellykkede kjøringer av CD dev og CD prod finnes
+  OK       K1    Workflowene logger inn med OIDC (id-token: write, ingen creds:)
+  OK       K2    foer.txt (840ac28) er committet før migrerings-commitene
+
+B · Migreringen
+  OK       K3    stacks/shared-network og stacks/service finnes
+  OK       K3    Ingen tjenestenavn i fil- eller mappenavn under stacks/
+  OK       K4    Historikken har removed med destroy = false (2 commits) og import (2 commits)
+  OK       K5    Ingen /subscriptions/ i .tf- eller .tfvars-filer, heller ikke i historikken
+  OK       K6    Alle 26 ressursene har samme ID og createdTime før og etter
+  MANUELL  K6    Ingen migreringskjøring hadde to destroy > 0
+           → Subnett, NSG-regler og NSG-koblinger er ikke med i øyeblikksbildet. Planene på migrerings-PR-ene viser dem
+  OK       K7    Alle 6 commitene på main etter foer.txt er rullet ut i både dev og prod
+  OK       K8    Ingen removed- eller import-blokker igjen
+  OK       K8    network, data og app er borte fra stacks/ og config/
+  OK       K8    De gamle state-filene er slettet fra state-kontoen
+  MANUELL  K8    Alle stackene gir No changes i begge miljøene
+           → CI-planen på siste PR skal vise ✅ No changes for hver stack, både mot dev og prod
+
+C · Ny tjeneste og endringsordrer
+  Dine verdier: port 8076 fra 172.16.53.0/24 · nytt område 10.10.188.0/24 / 10.20.188.0/24 · ny tjeneste sok
+  OK       K9    Commiten som innførte sok (1f95b19) endret bare filer under config/
+  OK       K10   EO 1 er lukket
+  OK       K10   EO 2 er lukket
+  OK       K10   EO 3 er lukket
+  OK       K10   EO 1 (dev): regelen finnes, og eies av samme state som ordre (service-ordre)
+  OK       K10   EO 2 (dev): 10.10.188.0/24 er i adresserommet, og eies av shared-network
+  OK       K10   EO 3 (dev): app-katm-sok-dev kjører med subnett 10.10.188.0/24, i egen state (service-sok)
+  OK       K10   EO 1 (prod): regelen finnes, og eies av samme state som ordre (service-ordre)
+  OK       K10   EO 2 (prod): 10.20.188.0/24 er i adresserommet, og eies av shared-network
+  OK       K10   EO 3 (prod): app-katm-sok-prod kjører med subnett 10.20.188.0/24, i egen state (service-sok)
+
+D · Kvalitet
+  OK       K11   Porten (valider.sh med TFLint og Checkov) kjører i en workflow
+  OK       K11   main krever kodekontroll, plan mot dev og plan mot prod
+  OK       K12   Alle .tfvars-filene ligger under config/
+  OK       K12   Fant ingen kjente hemmelighetsmønstre i historikken
+
+─────────────────────────────────────────────
+  OK: 26   Avvik: 0   Manuell: 2   Hoppet over: 0
+
+  Ingen avvik. Husk de manuelle punktene i innleveringen.
+
