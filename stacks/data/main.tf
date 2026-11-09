@@ -1,50 +1,42 @@
-# Datalaget for ALLE tjenestene: én storage account og ett Key Vault per
-# tjeneste. Ressursgruppa eies av network-stacken.
+# Midlertidige lesekilder mens ressursene flyttes mellom state-filer.
+# Ingen ressurser opprettes, oppdateres eller slettes av denne stacken.
+data "azurerm_resource_group" "existing" {
+  name = "rg-${var.kortnavn}-oblig2-${var.miljo}"
 
-data "azurerm_client_config" "current" {}
-
-data "terraform_remote_state" "network" {
-  backend = "azurerm"
-  config = {
-    resource_group_name  = var.state_resource_group_name
-    storage_account_name = var.state_storage_account_name
-    container_name       = var.state_container_name
-    key                  = "oblig2/${var.miljo}/network.tfstate"
-    use_azuread_auth     = true
+  lifecycle {
+    postcondition {
+      condition     = self.location == var.location
+      error_message = "Ressursgruppa maa bli i samme region under migreringen."
+    }
   }
 }
 
-locals {
-  network = data.terraform_remote_state.network.outputs
+data "azurerm_storage_account" "existing" {
+  for_each = var.tjenester
 
-  tags = {
-    eier  = var.kortnavn
-    miljo = var.miljo
-    kurs  = "dcst3005-oblig2"
+  name                = "st${var.kortnavn}${each.key}${var.miljo}"
+  resource_group_name = data.azurerm_resource_group.existing.name
+}
+
+data "azurerm_key_vault" "existing" {
+  for_each = var.tjenester
+
+  name                = "kv-${var.kortnavn}-${each.key}-${var.miljo}"
+  resource_group_name = data.azurerm_resource_group.existing.name
+}
+
+removed {
+  from = module.storage
+
+  lifecycle {
+    destroy = false
   }
 }
 
-module "storage" {
-  source   = "../../modules/storage"
-  for_each = var.tjenester
+removed {
+  from = module.keyvault
 
-  service             = each.key
-  kortnavn            = var.kortnavn
-  miljo               = var.miljo
-  resource_group_name = local.network.resource_group_name
-  location            = var.location
-  tags                = local.tags
-}
-
-module "keyvault" {
-  source   = "../../modules/keyvault"
-  for_each = var.tjenester
-
-  service             = each.key
-  kortnavn            = var.kortnavn
-  miljo               = var.miljo
-  resource_group_name = local.network.resource_group_name
-  location            = var.location
-  tenant_id           = data.azurerm_client_config.current.tenant_id
-  tags                = local.tags
+  lifecycle {
+    destroy = false
+  }
 }

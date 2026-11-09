@@ -23,21 +23,6 @@ variable "miljo" {
   }
 }
 
-variable "state_resource_group_name" {
-  description = "Ressursgruppa til state-kontoen. Settes av scripts/kjor.sh fra shared/backend.hcl."
-  type        = string
-}
-
-variable "state_storage_account_name" {
-  description = "State-kontoen. Settes av scripts/kjor.sh fra shared/backend.hcl."
-  type        = string
-}
-
-variable "state_container_name" {
-  description = "Containeren state ligger i. Settes av scripts/kjor.sh fra shared/backend.hcl."
-  type        = string
-}
-
 variable "tjenester" {
   description = "Tjenestene og kjøremiljøet deres: \"vm\" eller \"webapp\"."
   type        = map(string)
@@ -46,21 +31,4 @@ variable "tjenester" {
     condition     = alltrue([for r in values(var.tjenester) : contains(["vm", "webapp"], r)])
     error_message = "Kjøremiljøet må være vm eller webapp."
   }
-}
-
-variable "vm_size" {
-  description = "VM-størrelsen for tjenester med runtime vm."
-  type        = string
-  default     = "Standard_B2als_v2"
-}
-
-variable "ssh_public_key" {
-  description = "Offentlig SSH-nøkkel til VM-ene. Ikke hemmelig."
-  type        = string
-}
-
-variable "webapp_sku" {
-  description = "SKU for App Service-planene til tjenester med runtime webapp."
-  type        = string
-  default     = "B1"
 }

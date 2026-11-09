@@ -23,21 +23,6 @@ variable "miljo" {
   }
 }
 
-variable "state_resource_group_name" {
-  description = "Ressursgruppa til state-kontoen. Settes av scripts/kjor.sh fra shared/backend.hcl."
-  type        = string
-}
-
-variable "state_storage_account_name" {
-  description = "State-kontoen. Settes av scripts/kjor.sh fra shared/backend.hcl."
-  type        = string
-}
-
-variable "state_container_name" {
-  description = "Containeren state ligger i. Settes av scripts/kjor.sh fra shared/backend.hcl."
-  type        = string
-}
-
 variable "tjenester" {
   description = "Tjenestene som skal ha en storage account og et Key Vault."
   type        = set(string)
