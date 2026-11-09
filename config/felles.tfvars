@@ -5,6 +5,6 @@
 
 kortnavn = "katm"
 
-# App Service (web app) virker bare i West Europe i abonnementet dere bruker.
-# Ikke bytt region.
-location = "westeurope"
+# Forsok med North Europe etter rad fra faglaerer om kapasitetsfeil i West Europe.
+# Brukes til et nytt utgangspunkt for migreringen.
+location = "northeurope"
