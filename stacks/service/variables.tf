@@ -81,3 +81,13 @@ variable "webapp_sku" {
   type        = string
   default     = "B1"
 }
+
+variable "extra_tcp_rules" {
+  description = "Ekstra TCP-regler for denne tjenesten. Valideres i subnettmodulen."
+  type = map(object({
+    port     = number
+    source   = string
+    priority = number
+  }))
+  default = {}
+}
